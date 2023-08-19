@@ -18,7 +18,13 @@ def find_greedy_path(start, nodes):
 
 def calculate_packages_required(distance):
     """Calculate the number of food packages required based on the distance."""
-    return (distance + 9) // 10  # Ensure we round up
+    # If travel time is a multiple of 10, divide by 10
+    # Otherwise, divide by 10 and round up
+    out = distance// 10
+    rem = distance % 10
+    if rem >= 5:
+        out = out + 1
+    return out
 
 def calculate_weight_penalty(distance, packages):
     """Calculate the weight penalty for the journey based on the number of packages."""
