@@ -51,21 +51,29 @@ def journey_details(path):
         total_distance += distance
         total_packages += packages
         total_penalty += penalty
-        total_recovery += packages * 10
+        total_recovery += recovery_mins(distance)
         details.append({
             'start': start,
             'end': end,
             'distance': distance,
             'packages': packages,
             'penalty': penalty,
-            'recovery': packages * 10
+            'recovery': recovery_mins(distance)
         })
     return details, total_distance, total_packages, total_penalty, total_recovery
 
 def calculate_score(D, d, P, T, W):
     """Calculate the final score using the provided formula."""
-    score = 20 * (math.log(0.1 * d * (D + 0.01 / d)) + 0.8 * P - 1.1 * T + 10 / (1 + W))
+    score = 20 ** (math.log(0.1 * d * (D + 0.01 / d)) + 0.8 ** P - 1.1 ** T + 10 / (1 + W))
     return round(score)
+
+def recovery_mins(travel_time):
+    t = math.ceil(travel_time/10)
+    rem = travel_time % 10
+    rec = 0
+    if rem >= 5:
+        rec = t*10-travel_time
+    return rec
 
 # Example usage
 if __name__ == "__main__":
