@@ -30,7 +30,6 @@ def nearest_neighbor_path(locations):
     
     while unvisited_nodes:
         current_node = path[-1]
-        # Find the nearest unvisited node
         nearest_node = min(unvisited_nodes, key=lambda x: manhattan_distance(current_node, x))
         path.append(nearest_node)
         unvisited_nodes.remove(nearest_node)
@@ -42,27 +41,22 @@ def generate_submission(path):
     submission = []
     current_node = path[0]
     for i in range(1, len(path)):
-        # Calculate travel details
         travel_time = manhattan_distance(current_node, path[i])
         packages = required_packages(travel_time)
         penalty = weight_penalty(packages, travel_time)
         recovery = recovery_time(packages)
         
-        # Append to submission
         submission.append([packages, [path[i]]])
-        
-        # Update current node
         current_node = path[i]
     
     return submission
 
 def calculate_score(submission, locations):
     """Calculate the score based on the submission and locations."""
-    # Initial values
-    D = 0  # Total distance travelled
-    P = 0  # Total packages sent
-    T = 0  # Total recovery minutes
-    W = 0  # Total weight penalty
+    D = 0  
+    P = 0  
+    T = 0  
+    W = 0  
     
     current_node = (0, 0)
     for entry in submission:
@@ -73,20 +67,61 @@ def calculate_score(submission, locations):
             travel_time = manhattan_distance(current_node, destination)
             D += travel_time
             W += weight_penalty(packages, travel_time)
-            # Adjust packages for consumption
             packages -= required_packages(travel_time)
             current_node = destination
     
     d = manhattan_distance((0, 0), current_node)
-    
-    # Calculate final score using the given formula
     SF = 20 * (math.log(0.1 * d * (D + 0.01) / d) + 0.8 * P - 1.1 * T + 10 / (1 + W))
     
     return round(SF)
 
-# Test the code with the provided example
-locations_example = [(55, 96), (95, 60), (5, 68), (80, 66), (89, 74), (100, 100)]
-path_example = nearest_neighbor_path(locations_example)
-submission_example = generate_submission(path_example)
-score_example = calculate_score(submission_example, locations_example)
-print(score_example)
+# Example usage:
+if __name__ == "__main__":
+    locations_example = [(42, 43), (12, 45), (35, 49), (31, 32), (50, 50)]
+    path_example = nearest_neighbor_path(locations_example)
+    print("Path:", path_example)
+    submission_example = generate_submission(path_example)
+    print("Submission:", submission_example)
+    score_example = calculate_score(submission_example, locations_example)
+    print("Score:", score_example)
+
+
+
+def optimize_with_buffer(path):
+    """Optimize the number of packages sent with a buffer."""
+    optimized_submission = []
+    current_node = path[0]
+    buffer = 10
+    for i in range(1, len(path)):
+        travel_time = manhattan_distance(current_node, path[i])
+        exact_packages = required_packages(travel_time)
+        if i < len(path) - 1:
+            next_travel_time = manhattan_distance(path[i], path[i+1])
+            buffer = required_packages(next_travel_time) - 1
+        
+        total_packages = exact_packages + buffer
+        optimized_submission.append([total_packages, [path[i]]])
+        current_node = path[i]
+    
+    return optimized_submission
+
+# Updated example usage to write the results to a txt file
+if __name__ == "__main__":
+    locations_example = [(55, 96), (95, 60), (5, 68), (80, 66), (89, 74), (100, 100)]
+    path_example = nearest_neighbor_path(locations_example)
+    
+    # optimized_submission_example = optimize_packages(path_example)
+    # optimized_score_example = calculate_score(optimized_submission_example, locations_example)
+    
+    optimized_with_buffer_submission = optimize_with_buffer(path_example)
+    print(optimize_with_buffer(path_example))
+    optimized_with_buffer_score = calculate_score(optimized_with_buffer_submission, locations_example)
+    print(calculate_score(optimized_with_buffer_submission, locations_example))
+    
+    with open("expedition_results.txt", "w") as file:
+        file.write("Path:\n" + str(path_example) + "\n")
+        # file.write("Optimized Submission (Exact Needs):\n" + str(optimized_submission_example) + "\n")
+        # file.write("Score (Exact Needs): " + str(optimized_score_example) + "\n")
+        file.write("Optimized Submission (With Buffer):\n" + str(optimized_with_buffer_submission) + "\n")
+        file.write("Score (With Buffer): " + str(optimized_with_buffer_score))
+
