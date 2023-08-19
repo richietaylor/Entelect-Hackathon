@@ -53,7 +53,7 @@ def greedy_path(start, end, nodes):
     return path
 
 # Test the function with an example set of nodes
-test_nodes = [(7, 6), (3, 5), (9, 8), (10, 10)]
+test_nodes = [(55, 96), (95, 60), (5, 68), (80, 66), (89, 74), (100, 100)]
 start_node = (0, 0)
 end_node = (10, 10)
 greedy_route = greedy_path(start_node, end_node, test_nodes)
