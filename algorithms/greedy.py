@@ -78,7 +78,7 @@ def recovery_mins(travel_time):
 # Example usage
 if __name__ == "__main__":
     # Given nexus locations
-    nexus_locations = [(308, 264), (26, 362), (391, 266), (417, 32), (341, 30), (444, 93), (208, 263), (326, 482), (408, 266), (43, 306), (141, 461), (54, 148), (485, 117), (268, 330), (267, 387), (500, 500)]
+    nexus_locations = [(55, 96), (95, 60), (5, 68), (80, 66), (89, 74), (100, 100)]
     start = (0, 0)
     # end = (10, 10)
     # Find the path using the greedy approach
