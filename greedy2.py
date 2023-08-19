@@ -1,4 +1,5 @@
 import math
+from functions import *
 def manhattan_distance(node1, node2):
     """Calculate the Manhattan distance between two nodes."""
     return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
@@ -93,6 +94,45 @@ def greedy_path_with_packages(nodes, start, end, package_function):
     return path, packages_needed
 
 
+def greedy_path_with_packages_and_modified_score(nodes, start, end, package_function):
+    """Greedy algorithm to find the path based on shortest Manhattan distance, compute packages, and then score."""
+    
+    # Step 1: Initialization
+    remaining_nodes = nodes.copy()
+    current_node = start
+    path = []
+    
+    # Step 2: Greedy Selection
+    while remaining_nodes:
+        # Calculate Manhattan distance to all unvisited nodes
+        distances = [manhattan_distance(current_node, node) for node in remaining_nodes]
+        
+        # Find the node with the shortest distance
+        next_node = remaining_nodes[distances.index(min(distances))]
+        path.append(next_node)
+        remaining_nodes.remove(next_node)
+        current_node = next_node
+    
+    # Add the end node to the path
+    path.append(end)
+    
+    # Step 3: Package Calculation
+    travel_times = []
+    packages_needed = []
+    current_node = start
+    for next_node in path:
+        travel_time = manhattan_distance(current_node, next_node)
+        travel_times.append(travel_time)
+        packages = package_function(travel_time)
+        packages_needed.append(packages)
+        current_node = next_node
+    
+    # Step 4: Score Calculation using the modified function
+    travel_times, packages_sent, recoveries, penalties = compute_journey_info(start, path)
+    score = modified_compute_score(start, end, travel_times, packages_sent, recoveries, penalties)
+    
+    return path, packages_needed, score
+
 test_nodes = [(7, 6), (3, 5), (9, 8)]
 test_start = (0, 0)
 test_end = (10, 10)
@@ -102,6 +142,6 @@ path_greedy, packages_greedy
 
 
 
-print(compute_score(test_start,test_end))
+print(compute_score(test_start,test_end,))
 
 print(path_greedy)
