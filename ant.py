@@ -5,7 +5,7 @@ from functions import *
 
 
 # Test nodes and starting and ending points
-test_nodes = [(3, 5), (7, 6), (9, 8)]
+test_nodes = [(55, 96), (95, 60), (5, 68), (80, 66), (89, 74), (100, 100)]
 start_node = (0, 0)
 end_node = (10, 10)
 
