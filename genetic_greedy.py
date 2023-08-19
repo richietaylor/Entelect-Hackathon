@@ -263,11 +263,110 @@ def genetic_algorithm(nodes, start, end, population_size=50, generations=100, mu
     best_chromosome = min(population, key=lambda chromosome: evaluate_fitness(chromosome, start, end))
     return best_chromosome
 
+def genetic_algorithm_with_elitism(nodes, start, end, population_size=100, generations=100, mutation_prob=0.5, tournament_size=3, elitism_ratio=0.1):
+    """Genetic Algorithm with Elitism for the inter-dimensional expedition problem."""
+    
+    # Initialize the population
+    population = initialize_population(nodes, population_size)
+    
+    # Number of elite individuals
+    num_elites = int(elitism_ratio * population_size)
+    
+    for generation in range(generations):
+        new_population = []
+        
+        # Evaluate the fitness of the current population
+        fitness_values = [evaluate_fitness(chromosome, start, end) for chromosome in population]
+        
+        # Elitism: Preserve the top individuals
+        sorted_indices = sorted(range(len(fitness_values)), key=lambda k: fitness_values[k])
+        elites = [population[i] for i in sorted_indices[:num_elites]]
+        new_population.extend(elites)
+        
+        # Create the rest of the new population
+        while len(new_population) < population_size:
+            # Selection
+            parent1 = tournament_selection(population, fitness_values, tournament_size)
+            parent2 = tournament_selection(population, fitness_values, tournament_size)
+            
+            # Crossover
+            offspring1, offspring2 = ordered_crossover(parent1, parent2)
+            
+            # Mutation
+            if random.random() < mutation_prob:
+                offspring1 = mutate(offspring1)
+            if random.random() < mutation_prob:
+                offspring2 = mutate(offspring2)
+            
+            new_population.extend([offspring1, offspring2])
+        
+        # Replace old population with the new population
+        population = new_population
+    
+    # Return the best solution from the last population
+    best_chromosome = min(population, key=lambda chromosome: evaluate_fitness(chromosome, start, end))
+    return best_chromosome
+
+# Run the Genetic Algorithm with Elitism
+best_path_elitism = genetic_algorithm_with_elitism(test_nodes, start_node, end_node)
+best_path_elitism_score = compute_score(start_node, end_node, *compute_journey_info(start_node, best_path_elitism))
+
+print("Elitism : " + str(best_path_elitism_score))
+
 # Run the Genetic Algorithm
 best_path = genetic_algorithm(test_nodes, start_node, end_node)
 best_path
+
+
 
 # Evaluate the score for the best path found by the genetic algorithm
 best_path_score = compute_score(start_node, end_node, *compute_journey_info(start_node, best_path))
 best_path_score
 print(best_path_score)
+
+
+def simulated_annealing(nodes, start, end, initial_temperature=5000, cooling_rate=0.995, max_iterations=10000):
+    """Simulated Annealing algorithm for the inter-dimensional expedition problem."""
+    
+    # Generate an initial solution randomly
+    current_solution = nodes.copy()
+    random.shuffle(current_solution)
+    
+    current_cost = evaluate_fitness(current_solution, start, end)
+    
+    best_solution = current_solution
+    best_cost = current_cost
+    
+    temperature = initial_temperature
+    
+    for iteration in range(max_iterations):
+        # Generate a neighboring solution by swapping two random nodes
+        neighbor = current_solution.copy()
+        i, j = random.sample(range(len(neighbor)), 2)
+        neighbor[i], neighbor[j] = neighbor[j], neighbor[i]
+        
+        # Calculate the cost of the neighboring solution
+        neighbor_cost = evaluate_fitness(neighbor, start, end)
+        
+        # Calculate the cost difference
+        cost_diff = neighbor_cost - current_cost
+        
+        # Check if the neighboring solution should be accepted
+        if cost_diff < 0 or random.random() < math.exp(-cost_diff / temperature):
+            current_solution, current_cost = neighbor, neighbor_cost
+            
+            # Update the best solution if needed
+            if current_cost < best_cost:
+                best_solution, best_cost = current_solution, current_cost
+        
+        # Reduce the temperature
+        temperature *= cooling_rate
+    
+    return best_solution
+
+# Run the Simulated Annealing algorithm
+best_path_sa = simulated_annealing(test_nodes, start_node, end_node)
+best_path_sa_score = compute_score(start_node, end_node, *compute_journey_info(start_node, best_path_sa))
+
+best_path_sa, best_path_sa_score
+print("Simulated Anneling : "+str(best_path_sa_score))
