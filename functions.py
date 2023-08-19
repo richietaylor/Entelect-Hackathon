@@ -102,3 +102,29 @@ def output(journey_data):
     with open(output_path, "w") as file:
         for line in output_content:
             file.write(line + "\n")
+
+def journey_details(path):
+    """Calculate the packages required, weight penalty, and recovery time for a given path."""
+    total_distance = 0
+    total_packages = 0
+    total_penalty = 0
+    total_recovery = 0
+    details = []
+    for i in range(len(path) - 1):
+        start, end = path[i], path[i+1]
+        distance = manhattan_distance(start, end)
+        packages = food_required(distance)
+        penalty = weight_penalty(distance, packages)
+        total_distance += distance
+        total_packages += packages
+        total_penalty += penalty
+        total_recovery += packages * 10
+        details.append({
+            'start': start,
+            'end': end,
+            'distance': distance,
+            'packages': packages,
+            'penalty': penalty,
+            'recovery': packages * 10
+        })
+    return details, total_distance, total_packages, total_penalty, total_recovery
