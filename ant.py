@@ -76,19 +76,25 @@ class AntColonyOptimization:
             current_node = next_node
         
         return visited_nodes
-    
     def update_pheromone(self, paths):
         """Update the pheromone levels on the edges based on the paths taken by the ants."""
         for path in paths:
             for i in range(len(path) - 1):
                 start_index = self.nodes.index(path[i])
                 end_index = self.nodes.index(path[i+1])
-                self.pheromone[start_index][end_index] += self.pheromone_amount / compute_score(self.start, self.end, *compute_journey_info(self.start, path))
-                self.pheromone[end_index][start_index] += self.pheromone_amount / compute_score(self.start, self.end, *compute_journey_info(self.start, path))
+                
+                # Get journey details using the new function
+                journey, total_distance, total_packages, total_penalty, total_recovery = journey_details(path)
+                
+                # Ensure the score is not zero or very close to zero
+                score = compute_score(self.start, self.end, [total_distance], [total_packages], [total_recovery], [total_penalty])
+                adjusted_score = score if abs(score) > 1e-10 else 1e-10
+                
+                self.pheromone[start_index][end_index] += self.pheromone_amount / adjusted_score
+                self.pheromone[end_index][start_index] += self.pheromone_amount / adjusted_score
         
         # Evaporate pheromone
         self.pheromone = [[(1 - self.evaporation_rate) * pheromone for pheromone in row] for row in self.pheromone]
-    
     def optimize(self):
         best_path = None
         best_score = float('-inf')
@@ -115,3 +121,5 @@ best_path_aco, best_score_aco = aco.optimize()
 best_path_aco, best_score_aco
 
 print(best_score_aco)
+
+
