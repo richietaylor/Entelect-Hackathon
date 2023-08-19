@@ -12,7 +12,7 @@ def find_greedy_path(start, nodes):
     while nodes:
         current = path[-1]
         # Find the nearest unvisited node
-        nearest_node = min(nodes, key=lambda x: manhattan_distance(current, x))
+        nearest_node = min(nodes, key=lambda x: manhattan_distance(current, x) + recovery_mins(manhattan_distance(current, x)))
         path.append(nearest_node)
         nodes.remove(nearest_node)
     return path
@@ -78,7 +78,7 @@ def recovery_mins(travel_time):
 # Example usage
 if __name__ == "__main__":
     # Given nexus locations
-    nexus_locations = [(48, 113), (409, 588), (263, 839), (523, 437), (582, 136), (607, 713), (873, 275), (503, 675), (770, 697), (60, 284), (883, 943), (145, 979), (292, 833), (709, 96), (883, 810), (976, 50), (68, 78), (648, 104), (382, 850), (21, 368), (1000, 1000)]
+    nexus_locations = [(308, 264), (26, 362), (391, 266), (417, 32), (341, 30), (444, 93), (208, 263), (326, 482), (408, 266), (43, 306), (141, 461), (54, 148), (485, 117), (268, 330), (267, 387), (500, 500)]
     start = (0, 0)
     # end = (10, 10)
     # Find the path using the greedy approach
