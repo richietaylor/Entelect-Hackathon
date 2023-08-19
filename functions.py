@@ -83,7 +83,7 @@ def compute_journey_info(start, path):
         penalties.append(penalty)
         
         # Calculate recovery time for I.D.G.A.F.
-        recovery = packages * 10
+        recovery = recovery_mins(packages)
         recoveries.append(recovery)
         
         current_position = node
