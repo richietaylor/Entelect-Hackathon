@@ -89,3 +89,16 @@ def compute_journey_info(start, path):
         current_position = node
     
     return travel_times, food_needs, penalties, recoveries
+
+def output(journey_data):
+    output_content = ["["]
+    for data in journey_data:
+        line = f"	[{data['packages']}, [{data['end']}]],"
+        output_content.append(line)
+    output_content.append("]")
+
+    # Save the output to a .txt file
+    output_path = "expedition_output_format.txt"
+    with open(output_path, "w") as file:
+        for line in output_content:
+            file.write(line + "\n")
